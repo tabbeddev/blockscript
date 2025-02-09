@@ -1,0 +1,10 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "blockscript"
+version = "0.0.1"
+description = "Code Minecraft datapacks in python!"
+authors = [{ name = "Niklas Deppermann", email = "moerchn123@proton.me" }]
+dependencies = []
