@@ -1,1 +1,2 @@
-hello;
+var currentTime = getWorldTime();
+printf("Current World Time: " + currentTime);

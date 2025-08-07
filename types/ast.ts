@@ -1,84 +1,145 @@
 export enum ASTType {
-  BlockStatement,
-  ExportedNamedDeclaration,
-  FunctionDeclaration,
-  VariableDeclaration,
+	BlockStatement,
+	FunctionDeclaration,
+	VariableDeclaration,
 
-  AssignmentExpression,
-  CallExpression,
+	MemberExpression,
+	SelectorExpression,
+
+	AssignmentExpression,
+	CallExpression,
+
+	BinaryExpression,
+
+	Literal,
+	Number,
+	Identifier,
+
+	ArrayExpression,
+	ObjectExpression,
 }
 
-export enum ASTGeneratorLayers {
-  FunctionArguments,
-  BlockFunction,
-  IfBlockFunction,
-
-  CallArguments,
-  Indexer,
-
-  String,
-  Array,
-  Dictionary,
-
-  Comment,
+export interface ASTNode {
+	type: ASTType;
 }
 
-export enum ASTGeneratorExpectStates {
-  Normal, // Identifier or keyword
-  Export, // export ...
-  FunctionArgumentsOpen, // [name]...
-  // NOTE: Arguments is a layer not a state
+export type ASTValues =
+	| ASTLiteral
+	| ASTNumber
+	| ASTIdentifer
+	| ASTCallExpression
+	| ASTBinaryExpression
+	| ASTArrayExpression
+	| ASTObjectExpression
+	| ASTSelectorExpression
+	| ASTMemberExpression;
 
-  OpenBlock, // function random() ...
-  Identifier, // function ... or global ...
+export type ASTAssignmentValue =
+	| ASTMemberExpression
+	| ASTSelectorExpression
+	| ASTIdentifer;
 
-  Semicolon,
-  Equals, // global name = ...
-
-  Values, // string, array, dict or number
-  AnythingWithIdentifier, // Operator or OpenParen
+export interface ASTLiteral extends ASTNode {
+	type: ASTType.Literal;
+	value: string;
 }
 
-interface ASTElement {
-  type: ASTType;
+export interface ASTNumber extends ASTNode {
+	type: ASTType.Number;
+	value: number;
 }
 
-type ASTValues = string | number | ASTValues[] | { [key: string]: ASTValues } | ASTCallExpression;
-type ASTAssignmentOperatoes = "=" | "+=" | "-=" | "*=" | "/=" | "%=";
-
-export interface ASTBlockStatement extends ASTElement {
-  type: ASTType.BlockStatement;
-  body: ASTElement[];
+export interface ASTIdentifer extends ASTNode {
+	type: ASTType.Identifier;
+	value: string;
 }
 
-export interface ASTExportedNamedDeclaration extends ASTElement {
-  type: ASTType.ExportedNamedDeclaration;
-  declaration: ASTDeclarationElement;
+type ASTAssignmentOperators = "=" | "+=" | "-=" | "*=" | "/=" | "%=";
+
+export const precedence = {
+	"||": 1,
+	"&&": 2,
+
+	"==": 3,
+	"!=": 3,
+
+	"<": 4,
+	"<=": 4,
+	">": 4,
+	">=": 4,
+
+	"+": 5,
+	"-": 5,
+
+	"*": 6,
+	"/": 6,
+	"%": 6,
+};
+export type ASTOperators = keyof typeof precedence;
+
+export interface ASTBlockStatement extends ASTNode {
+	type: ASTType.BlockStatement;
+	body: ASTNode[];
 }
 
-export interface ASTDeclarationElement extends ASTElement {
-  name: string;
+// Boilerplate interface
+export interface ASTDeclarationElement extends ASTNode {
+	left: ASTAssignmentValue;
 }
 
 export interface ASTFunctionDeclaration extends ASTDeclarationElement {
-  type: ASTType.FunctionDeclaration;
-  body: ASTBlockStatement;
-  params: string[];
+	type: ASTType.FunctionDeclaration;
+	body: ASTBlockStatement;
+	params: string[];
 }
 
 export interface ASTVariableDeclaration extends ASTDeclarationElement {
-  type: ASTType.VariableDeclaration;
-  init: ASTValues;
+	type: ASTType.VariableDeclaration;
+	init?: ASTValues;
+	scope: "local" | "global" | "var";
 }
 
 export interface ASTAssignmentExpression extends ASTDeclarationElement {
-  type: ASTType.AssignmentExpression;
-  operator: ASTAssignmentOperatoes;
-  right: ASTValues;
+	type: ASTType.AssignmentExpression;
+	operator: ASTAssignmentOperators;
+	right: ASTValues;
 }
 
-export interface ASTCallExpression extends ASTElement {
+export interface ASTCallExpression extends ASTNode {
 	type: ASTType.CallExpression;
-	identifier: string;
+	callee: ASTValues;
 	arguments: ASTValues[];
+}
+
+export interface ASTBinaryExpression extends ASTNode {
+	type: ASTType.BinaryExpression;
+	left: ASTValues;
+	right: ASTValues;
+	operator: ASTOperators;
+}
+
+export interface ASTMemberExpression extends ASTNode {
+	// foo[123]
+	type: ASTType.MemberExpression;
+	value: ASTValues;
+	member: ASTValues;
+}
+
+export interface ASTSelectorExpression extends ASTNode {
+	// foo<@s>
+	type: ASTType.SelectorExpression;
+	value: ASTAssignmentValue;
+	selector: string;
+}
+
+export interface ASTArrayExpression extends ASTNode {
+	// [1, 2, 3]
+	type: ASTType.ArrayExpression;
+	elements: ASTValues[];
+}
+
+export interface ASTObjectExpression extends ASTNode {
+	// {1: 2, 3: 4}
+	type: ASTType.ObjectExpression;
+	properties: { key: ASTNode; value: ASTNode }[];
 }

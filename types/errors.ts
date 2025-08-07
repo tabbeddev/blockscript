@@ -1,6 +1,6 @@
 export enum ErrorTypes {
 	SyntaxError,
-	WIPError
+	WIPError,
 }
 
 export interface Error {
