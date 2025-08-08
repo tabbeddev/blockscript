@@ -8,49 +8,49 @@ local cool_number;
 
 function TICK() {
 	print(getWorldTime());
-}
+};
 
 function setVariable() {
 	cool_number<@s> = 45;
-}
+};
 
 function hardCodeExample() {
 	hardcode 0 to 10 as i {
 		print(i);
-	}
-}
+	};
+};
 
 function jsLikeLoopExample(range) {
-	for i = 0 with i++ while i < range {
+	for i = 0 with i += 1 while i < range {
 		print(i);
-	}
-}
+	};
+};
 
 function inLoopExample() {
 	for item in important_numbers {
 		print(item);
-	}
-}
+	};
+};
 
 function helperExample() {
 	print(helperFunction());
-}
+};
 
 function helperFunction() {
 	return "Haha. Lustig";
-}
+};
 
 function lookupAlias(name) {
 	if name in exciting_lookup {
 		print(exciting_lookup[name]);
 	} else {
 		print("(S)he does not exist");
-	}
-}
+	};
+};
 
 function testprintF() {
 	printf("Hello &l%s. Press &k to walk!", <@s>, "idk.keybind");
 	printf("Your cool Score is: %v", cool_number<@s>);
 
-	var testString = sprintf("Test Advancement: %t", ["", ""])
-}
+	var testString = sprintf("Test Advancement: %t", ["", ""]);
+};

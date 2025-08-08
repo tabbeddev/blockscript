@@ -1,2 +1,1 @@
-var currentTime = getWorldTime();
-printf("Current World Time: " + currentTime);
+printf("Hello &l%s. Press &k to walk!", <@s>, "idk.keybind");

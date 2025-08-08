@@ -1,7 +1,7 @@
 {
   "tasks": {
-    "run-example": "deno run -R main.ts --file example.bs --debug",
-    "run-test": "deno run -R main.ts --file test.bs --debug"
+    "run-example": "deno run -RW main.ts --file example.bs --debug",
+    "run-test": "deno run -RW main.ts --file test.bs --debug"
   },
   "imports": {
     "@std/cli": "jsr:@std/cli@^1.0.17",

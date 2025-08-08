@@ -21,10 +21,14 @@ export enum TokenType {
 	To,
 	As,
 	Return,
+	If,
+	Elif,
+	Else,
 
 	// Grouping * Operators
 	BinaryOperator,
 	Equals,
+	DoubleEquals,
 
 	OpenParen,
 	CloseParen,
@@ -76,6 +80,9 @@ export const keywordLookup: KeywordLookup = {
 	to: TokenType.To,
 	as: TokenType.As,
 	return: TokenType.Return,
+	if: TokenType.If,
+	elif: TokenType.Elif,
+	else: TokenType.Else,
 };
 
 export const characterLookup: KeywordLookup = {

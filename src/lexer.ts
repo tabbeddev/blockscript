@@ -96,6 +96,15 @@ export function* tokenize(contents: string): Generator<Token, void, unknown> {
 				start,
 				stop: characterIndex,
 			};
+		} else if (src[0] === "=" && src[1] === "=") {
+			src.shift();
+			src.shift();
+			yield {
+				type: TokenType.DoubleEquals,
+				value: "==",
+				start: characterIndex,
+				stop: characterIndex + 1,
+			};
 		} else if (isAlpha(src[0])) {
 			const start = characterIndex;
 			let value = "";
@@ -122,8 +131,8 @@ export function* tokenize(contents: string): Generator<Token, void, unknown> {
 			yield {
 				type: characterLookup[src[0]],
 				value: src.shift(),
-				start: characterIndex - 1,
-				stop: characterIndex,
+				start: characterIndex,
+				stop: characterIndex + 1,
 			};
 		} else if (isSkippable(src[0])) {
 			src.shift();

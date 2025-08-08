@@ -9,14 +9,22 @@ export enum ASTType {
 	AssignmentExpression,
 	CallExpression,
 
+	ReturnStatement,
+
 	BinaryExpression,
 
 	Literal,
 	Number,
 	Identifier,
+	Selector,
 
 	ArrayExpression,
 	ObjectExpression,
+
+	ForLoop,
+	ForInLoop,
+	HardcodeLoop,
+	IfStatement,
 }
 
 export interface ASTNode {
@@ -26,7 +34,8 @@ export interface ASTNode {
 export type ASTValues =
 	| ASTLiteral
 	| ASTNumber
-	| ASTIdentifer
+	| ASTIdentifier
+	| ASTSelector
 	| ASTCallExpression
 	| ASTBinaryExpression
 	| ASTArrayExpression
@@ -37,7 +46,7 @@ export type ASTValues =
 export type ASTAssignmentValue =
 	| ASTMemberExpression
 	| ASTSelectorExpression
-	| ASTIdentifer;
+	| ASTIdentifier;
 
 export interface ASTLiteral extends ASTNode {
 	type: ASTType.Literal;
@@ -49,12 +58,17 @@ export interface ASTNumber extends ASTNode {
 	value: number;
 }
 
-export interface ASTIdentifer extends ASTNode {
+export interface ASTIdentifier extends ASTNode {
 	type: ASTType.Identifier;
 	value: string;
 }
 
-type ASTAssignmentOperators = "=" | "+=" | "-=" | "*=" | "/=" | "%=";
+export interface ASTSelector extends ASTNode {
+	type: ASTType.Selector;
+	value: string;
+}
+
+export type ASTAssignmentOperators = "=" | "+=" | "-=" | "*=" | "/=" | "%=";
 
 export const precedence = {
 	"||": 1,
@@ -67,6 +81,7 @@ export const precedence = {
 	"<=": 4,
 	">": 4,
 	">=": 4,
+	in: 4,
 
 	"+": 5,
 	"-": 5,
@@ -84,7 +99,7 @@ export interface ASTBlockStatement extends ASTNode {
 
 // Boilerplate interface
 export interface ASTDeclarationElement extends ASTNode {
-	left: ASTAssignmentValue;
+	left: ASTValues;
 }
 
 export interface ASTFunctionDeclaration extends ASTDeclarationElement {
@@ -111,6 +126,11 @@ export interface ASTCallExpression extends ASTNode {
 	arguments: ASTValues[];
 }
 
+export interface ASTReturnStatement extends ASTNode {
+	type: ASTType.ReturnStatement;
+	values: ASTValues[];
+}
+
 export interface ASTBinaryExpression extends ASTNode {
 	type: ASTType.BinaryExpression;
 	left: ASTValues;
@@ -129,7 +149,7 @@ export interface ASTSelectorExpression extends ASTNode {
 	// foo<@s>
 	type: ASTType.SelectorExpression;
 	value: ASTAssignmentValue;
-	selector: string;
+	selector: ASTSelector;
 }
 
 export interface ASTArrayExpression extends ASTNode {
@@ -142,4 +162,40 @@ export interface ASTObjectExpression extends ASTNode {
 	// {1: 2, 3: 4}
 	type: ASTType.ObjectExpression;
 	properties: { key: ASTNode; value: ASTNode }[];
+}
+
+export interface ASTHardcodeLoop extends ASTNode {
+	type: ASTType.HardcodeLoop;
+	start: ASTNumber;
+	stop: ASTNumber;
+	variableName: ASTIdentifier;
+
+	body: ASTBlockStatement;
+}
+
+export interface ASTForLoop extends ASTNode {
+	type: ASTType.ForLoop;
+	startExpr: ASTAssignmentExpression;
+	runningExpr: ASTNode;
+	checkExpr: ASTNode;
+
+	body: ASTBlockStatement;
+}
+
+export interface ASTForInLoop extends ASTNode {
+	type: ASTType.ForInLoop;
+	valueName: ASTIdentifier;
+	object: ASTValues;
+
+	body: ASTBlockStatement;
+}
+
+export interface ASTIfStatement extends ASTNode {
+	type: ASTType.IfStatement;
+	condition: ASTValues;
+
+	thenBlock: ASTBlockStatement;
+	elseBlock?: ASTBlockStatement;
+
+	elif?: ASTIfStatement;
 }
